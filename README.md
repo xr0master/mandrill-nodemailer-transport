@@ -5,7 +5,7 @@ mandrill-nodemailer-transport
 The custom transport plugin that allows to send email using Nodemailer via [Mandrill](https://mandrill.com/)
 
 ## Why?
-Created for the new Mandrill API and Nodemailer v4. The plugin is very small, optimized and written in TypeScript
+Created for the new Mandrill API and Nodemailer v4+. The plugin is very small, optimized and written in TypeScript
 
 ## Support the project
 If you like to use this module please click the star button - it is very motivating.
