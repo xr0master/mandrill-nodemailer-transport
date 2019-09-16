@@ -38,3 +38,5 @@ export class MandrillTransport implements Transport {
     });
   }
 }
+
+export default MandrillTransport;
