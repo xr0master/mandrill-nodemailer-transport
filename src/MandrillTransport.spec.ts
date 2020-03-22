@@ -74,7 +74,7 @@ test('test the Mandrill error', (done: Function) => {
   expect.assertions(1);
 
   createTransport(new MandrillTransport(<Options>{
-    apiKey: API_KEY
+    apiKey: API_KEY + 'wrong'
   })).sendMail({
 
   }).then((info) => {
