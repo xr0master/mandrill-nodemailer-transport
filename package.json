@@ -29,15 +29,15 @@
     "nodemailer": ">=4.0.0"
   },
   "devDependencies": {
-    "@types/jest": "23.3.11",
-    "@types/node": "10.12.18",
-    "@types/nodemailer": "4.6.5",
-    "jest": "23.6.0",
-    "nodemailer": "5.0.0",
-    "ts-jest": "23.10.5",
-    "tslint": "5.12.0",
+    "@types/jest": "25.1.4",
+    "@types/node": "13.9.3",
+    "@types/nodemailer": "6.4.0",
+    "jest": "25.1.0",
+    "nodemailer": "6.0.0",
+    "ts-jest": "25.2.1",
+    "tslint": "6.1.0",
     "tslint-eslint-rules": "5.4.0",
-    "typescript": "3.2.2"
+    "typescript": "3.8.3"
   },
   "engines": {
     "node": ">=6.0.0"
