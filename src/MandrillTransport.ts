@@ -1,4 +1,5 @@
-import {Transport, SendMailOptions} from 'nodemailer';
+import {Transport, SendMailOptions, SentMessageInfo} from 'nodemailer';
+import MailMessage = require('nodemailer/lib/mailer/mail-message');
 import {Requestly} from './services/Requestly';
 import {Mandrill} from './models/Mandrill';
 
@@ -13,7 +14,7 @@ export class MandrillTransport implements Transport {
 
   constructor(private options: Options) {}
 
-  public send(mail: any, done: Function): void {
+  public send(mail: MailMessage, done: (err: Error | null, info?: SentMessageInfo) => void): void {
     setImmediate(() => {
       mail.normalize((error, data: SendMailOptions) => {
         if (error) return done(error);
@@ -33,7 +34,7 @@ export class MandrillTransport implements Transport {
               message: mandrill.message
             });
           })
-          .catch((e) => done(e));
+          .catch(e => done(e));
       });
     });
   }

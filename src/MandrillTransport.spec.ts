@@ -2,11 +2,13 @@ import {createTransport} from 'nodemailer';
 import {Attachment} from 'nodemailer/lib/mailer';
 import {MandrillTransport, Options} from './MandrillTransport';
 
+const API_KEY: string = '';
+
 test('test the html', (done: Function) => {
   expect.assertions(1);
 
   createTransport(new MandrillTransport(<Options>{
-    apiKey: 'API_KEY'
+    apiKey: API_KEY
   })).sendMail({
     from: 'sergey@emailjs.com',
     to: 'sergey@emailjs.com',
@@ -25,7 +27,7 @@ test('test the attachments path', (done: Function) => {
   expect.assertions(1);
 
   createTransport(new MandrillTransport(<Options>{
-    apiKey: 'API_KEY'
+    apiKey: API_KEY
   })).sendMail({
     from: 'sergey@emailjs.com',
     to: 'Sergey <sergey@emailjs.com>',
@@ -47,7 +49,7 @@ test('test the attachments base64', (done: Function) => {
   expect.assertions(1);
 
   createTransport(new MandrillTransport(<Options>{
-    apiKey: 'API_KEY'
+    apiKey: API_KEY
   })).sendMail({
     from: 'sergey@emailjs.com',
     to: 'Sergey <sergey@emailjs.com>',
@@ -72,7 +74,7 @@ test('test the Mandrill error', (done: Function) => {
   expect.assertions(1);
 
   createTransport(new MandrillTransport(<Options>{
-    apiKey: 'API_KEY'
+    apiKey: API_KEY
   })).sendMail({
 
   }).then((info) => {
