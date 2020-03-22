@@ -1,11 +1,11 @@
 import {SendMailOptions} from 'nodemailer';
 import {Address} from 'nodemailer/lib/mailer';
 
-const TRANSFORM_FIELDS: Object = {
+const TRANSFORM_FIELDS: object = {
   replyTo: 'Reply-To'
 };
 
-const TO_KEYS: Array<string> = ['to', 'cc', 'bcc'];
+const TO_KEYS: Array<To['type']> = ['to', 'cc', 'bcc'];
 const HEADERS: Array<string> = ['replyTo'];
 
 interface To {
@@ -39,7 +39,7 @@ export class Mandrill {
 
   private getFromAddress(data: SendMailOptions): string {
     if (data.from) {
-      return (<Address>data.from).address || '';
+      return (data.from as Address).address || '';
     }
 
     return '';
@@ -49,11 +49,11 @@ export class Mandrill {
     return TO_KEYS.reduce((accumulator: Array<To>, target) => {
       if (!data[target]) return accumulator;
 
-      data[target].forEach(to => {
+      (data[target] as Array<Address>).forEach(to => {
         accumulator.push({
           email: to.address,
           name: to.name,
-          type: <any>target
+          type: target
         });
       });
 
@@ -69,7 +69,7 @@ export class Mandrill {
         accumulator.push({
           name: attachment.filename || attachment.cid,
           type: attachment.contentType,
-          content: <string>attachment.content
+          content: attachment.content as string
         });
       }
 
@@ -85,7 +85,7 @@ export class Mandrill {
         accumulator.push({
           name: attachment.cid,
           type: attachment.contentType,
-          content: <string>attachment.content
+          content: attachment.content as string
         });
       }
 
