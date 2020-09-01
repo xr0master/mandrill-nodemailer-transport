@@ -1,5 +1,6 @@
-import {Transport, SendMailOptions, SentMessageInfo} from 'nodemailer';
-import MailMessage = require('nodemailer/lib/mailer/mail-message');
+import type {Transport, SentMessageInfo} from 'nodemailer';
+import type MailMessage from 'nodemailer/lib/mailer/mail-message';
+
 import {Requestly} from './services/Requestly';
 import {Mandrill} from './models/Mandrill';
 
@@ -16,22 +17,21 @@ export class MandrillTransport implements Transport {
 
   public send(mail: MailMessage, done: (err: Error | null, info?: SentMessageInfo) => void): void {
     setImmediate(() => {
-      mail.normalize((error, data: SendMailOptions) => {
+      mail.normalize((error, data) => {
         if (error) return done(error);
 
-        let mandrill: Mandrill = new Mandrill(this.options.apiKey);
-        mandrill.setMessage(data);
+        const mandrillData = Mandrill.buildData(data, this.options.apiKey);
 
         Requestly.postJSON({
           protocol: 'https:',
           hostname: 'mandrillapp.com',
           path: '/api/1.0/messages/send.json'
-        }, mandrill)
+        }, mandrillData)
           .then(() => {
             done(null, {
               envelope: mail.message.getEnvelope(),
               messageId: mail.message.messageId(),
-              message: mandrill.message
+              message: mandrillData.message
             });
           })
           .catch(e => done(e));
