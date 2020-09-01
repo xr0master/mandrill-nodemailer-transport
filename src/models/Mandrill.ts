@@ -1,12 +1,12 @@
-import {SendMailOptions} from 'nodemailer';
-import {Address} from 'nodemailer/lib/mailer';
+import type {SendMailOptions} from 'nodemailer';
+import type {Address} from 'nodemailer/lib/mailer';
 
 const TRANSFORM_FIELDS: object = {
   replyTo: 'Reply-To'
 };
 
-const TO_KEYS: Array<To['type']> = ['to', 'cc', 'bcc'];
-const HEADERS: Array<string> = ['replyTo'];
+const TO_KEYS: To['type'][] = ['to', 'cc', 'bcc'];
+const HEADERS = ['replyTo'] as const;
 
 interface To {
   email: string;
@@ -20,36 +20,39 @@ interface Attachments {
   content: string;
 }
 
-export class Mandrill {
+export namespace Mandrill {
 
-  public key: string;
-  public message: any;
-
-  constructor(apiKey: string) {
-    this.key = apiKey;
-  }
-
-  private getFromName(data: SendMailOptions): string {
+  const getFromName = (data: SendMailOptions): string => {
     if (data.from) {
-      return (<Address>data.from).name || '';
+      return (data.from as Address).name || '';
     }
 
     return '';
-  }
+  };
 
-  private getFromAddress(data: SendMailOptions): string {
+  const getFromAddress = (data: SendMailOptions): string => {
     if (data.from) {
       return (data.from as Address).address || '';
     }
 
     return '';
-  }
+  };
 
-  private appendAddresses(data: SendMailOptions): Array<To> {
-    return TO_KEYS.reduce((accumulator: Array<To>, target) => {
+  const appendHeaders = (data: SendMailOptions): Object => {
+    return HEADERS.reduce((headers, key) => {
+      if (data[key]) {
+        headers[TRANSFORM_FIELDS[key] || key] = data[key];
+      }
+
+      return headers;
+    }, {});
+  };
+
+  const appendAddresses = (data: SendMailOptions): To[] => {
+    return TO_KEYS.reduce((accumulator, target) => {
       if (!data[target]) return accumulator;
 
-      (data[target] as Array<Address>).forEach(to => {
+      (data[target] as Address[]).forEach(to => {
         accumulator.push({
           email: to.address,
           name: to.name,
@@ -58,13 +61,13 @@ export class Mandrill {
       });
 
       return accumulator;
-    }, []);
-  }
+    }, [] as To[]);
+  };
 
-  private appendAttachments(data: SendMailOptions): Array<Attachments> {
+  const appendAttachments = (data: SendMailOptions): Attachments[] => {
     if (!Array.isArray(data.attachments)) return [];
 
-    return data.attachments.reduce((accumulator: Array<Attachments>, attachment) => {
+    return data.attachments.reduce((accumulator, attachment) => {
       if (!attachment.contentType.startsWith('image/')) {
         accumulator.push({
           name: attachment.filename || attachment.cid,
@@ -74,13 +77,13 @@ export class Mandrill {
       }
 
       return accumulator;
-    }, []);
-  }
+    }, [] as Attachments[]);
+  };
 
-  private appendImages(data: SendMailOptions): Array<Attachments> {
+  const appendImages = (data: SendMailOptions): Attachments[] => {
     if (!Array.isArray(data.attachments)) return [];
 
-    return data.attachments.reduce((accumulator: Array<Attachments>, attachment) => {
+    return data.attachments.reduce((accumulator, attachment) => {
       if (attachment.contentType.startsWith('image/')) {
         accumulator.push({
           name: attachment.cid,
@@ -90,30 +93,23 @@ export class Mandrill {
       }
 
       return accumulator;
-    }, []);
-  }
+    }, [] as Attachments[]);
+  };
 
-  private appendHeaders(data: SendMailOptions): Object {
-    return HEADERS.reduce((headers, key) => {
-      if (data[key]) {
-        headers[TRANSFORM_FIELDS[key] || key] = data[key];
+  export const buildData = (data: SendMailOptions, key: string) => {
+    return {
+      key,
+      message: {
+        html: data.html,
+        text: data.text,
+        subject: data.subject,
+        from_email: getFromAddress(data),
+        from_name: getFromName(data),
+        to: appendAddresses(data),
+        headers: appendHeaders(data),
+        attachments: appendAttachments(data),
+        images: appendImages(data)
       }
-
-      return headers;
-    }, {});
-  }
-
-  public setMessage(data: SendMailOptions): void {
-    this.message = {
-      html: data.html,
-      text: data.text,
-      subject: data.subject,
-      from_email: this.getFromAddress(data),
-      from_name: this.getFromName(data),
-      to: this.appendAddresses(data),
-      headers: this.appendHeaders(data),
-      attachments: this.appendAttachments(data),
-      images: this.appendImages(data)
     };
-  }
+  };
 }
