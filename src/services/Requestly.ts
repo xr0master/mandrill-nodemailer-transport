@@ -11,7 +11,7 @@ export namespace Requestly {
         res.on('data', (chunk) => chunks.push(chunk));
 
         res.on('end', () => {
-          let answer: any = Buffer.concat(chunks).toString();
+          let answer: any = JsonParse(Buffer.concat(chunks).toString());
 
           if (res.statusCode === 200) {
             resolve(answer);
@@ -47,5 +47,14 @@ export namespace Requestly {
     };
 
     return sendRequest(options, json);
+  }
+}
+
+function JsonParse(value: string): any {
+  try {
+    return JSON.parse(value);
+  }
+  catch (error) {
+    return undefined;
   }
 }
