@@ -1,5 +1,6 @@
-import type {Transport, SentMessageInfo} from 'nodemailer';
+import type {Transport} from 'nodemailer';
 import type MailMessage from 'nodemailer/lib/mailer/mail-message';
+import type {Envelope} from 'nodemailer/lib/mime-node';
 
 import {Requestly} from './services/Requestly';
 import {Mandrill} from './models/Mandrill';
@@ -7,6 +8,20 @@ import {Mandrill} from './models/Mandrill';
 export interface Options {
   apiKey: string;
 }
+
+export type MandrillResponse = {
+  _id: string;
+  email: string;
+  status: string;
+  reject_reason: string | null;
+};
+
+export type SentMessageInfo = {
+  envelope: Envelope;
+  messageId: string;
+  message: any;
+  response?: MandrillResponse[];
+};
 
 export class MandrillTransport implements Transport {
 
@@ -27,11 +42,12 @@ export class MandrillTransport implements Transport {
           hostname: 'mandrillapp.com',
           path: '/api/1.0/messages/send.json'
         }, mandrillData)
-          .then(() => {
+          .then((mandrillResponse: MandrillResponse[]) => {
             done(null, {
               envelope: mail.message.getEnvelope(),
               messageId: mail.message.messageId(),
-              message: mandrillData.message
+              message: mandrillData.message,
+              response: mandrillResponse
             });
           })
           .catch(e => done(e));
