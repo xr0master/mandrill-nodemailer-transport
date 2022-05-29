@@ -26,9 +26,9 @@ __send simple email__
 ``` js
   'use strict';
   const nodemailer = require('nodemailer');
-  const MandrillTransport = require('mandrill-nodemailer-transport');
+  const mandrill_nodemailer = require('mandrill-nodemailer-transport');
 
-  let transporter = nodemailer.createTransport(new MandrillTransport({
+  let transporter = nodemailer.createTransport(new mandrill_nodemailer.MandrillTransport({
     apiKey: '12124124124124-key-test'
   }));
 
@@ -49,9 +49,9 @@ __send attachment and add to content__
 ``` js
   'use strict';
   const nodemailer = require('nodemailer');
-  const MandrillTransport = require('mandrill-nodemailer-transport');
+  const mandrill_nodemailer = require('mandrill-nodemailer-transport');
 
-  let transporter = nodemailer.createTransport(new MandrillTransport({
+  let transporter = nodemailer.createTransport(new mandrill_nodemailer.MandrillTransport({
     apiKey: '12124124124124-key-test'
   }));
 
